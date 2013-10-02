@@ -1,0 +1,7 @@
+selfRatio > 0: 228
+selfRatio < 0: 347
+totalRatio > 0: 26
+totalRatio < 0: 532
+
+bei Testaufruf keine wesentlichen Veränderungen für >= 10 Samples/s;
+Veränderung (zunehmender Fehler) erst für 1 Sample/s

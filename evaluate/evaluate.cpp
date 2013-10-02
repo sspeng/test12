@@ -56,7 +56,7 @@ void handleNewMarker(Marker marker) {
 int main(int argc, char* argv[])
 {
   // to be read from a config file in future versions
-  unsigned chunkSize = 100;
+  unsigned chunkSize = 1000;
   const char* timeFilename = "time.dat";
   const char* voltageFilename = "voltage.dat";
   const char* currentFilename = "voltage.dat";

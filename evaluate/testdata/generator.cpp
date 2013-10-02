@@ -18,11 +18,11 @@ int main() {
   end.tv_sec = 1379406890;
   end.tv_nsec = 0;
   interval.tv_sec = 0;
-  interval.tv_nsec = 1000000;
+  interval.tv_nsec = 60000000;
   const double one = 1.0;
 
   for (timespec it = begin; end > it;) {
-    for (int j=0; j<100; j++) {
+    for (int j=0; j<1000; j++) {
       voltage.write((char*)&one, sizeof(double));
       current.write((char*)&one, sizeof(double));
     }
