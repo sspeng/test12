@@ -16,7 +16,7 @@ STATICLIBS = /usr/lib64/libxml++-2.6.so
 DSTNAME = checker
 
 all:
-	$(CXX) $(SRC) $(IFLAGS) $(STATICLIBS) -o $(DSTNAME)
+	$(CXX) -Wall -g $(SRC) $(IFLAGS) $(STATICLIBS) -o $(DSTNAME)
 
 clean:
 	rm -f $(DSTNAME)
