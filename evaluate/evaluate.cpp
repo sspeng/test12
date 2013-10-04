@@ -55,22 +55,25 @@ void handleNewMarker(Marker marker) {
 
 int main(int argc, char* argv[])
 {
-  // to be read from a config file in future versions
-  unsigned chunkSize = 1000;
-  const char* timeFilename = "time.dat";
-  const char* voltageFilename = "voltage.dat";
-  const char* currentFilename = "voltage.dat";
-  sampleReader.init(chunkSize, timeFilename, voltageFilename, currentFilename);
-
-
-  if(argc != 4)
+  if(argc != 9)
     {
-      std::cout << "usage: evaluate <call logfile> <time profile> <merged profile>\n" << std::endl;
+      std::cout << "usage: evaluate <call logfile> <time profile> <merged profile> <timestamps> <channelA> <channelB> <channelC> <channelD>\n" << std::endl;
       exit(EXIT_FAILURE);
     }
+
+
+  // to be read from a config file in future versions
+  unsigned chunkSize = 1000;
   const char* callLogFilename = argv[1];
   const char* timeProfileFilename = argv[2];
   const char* mergedProfileFilename = argv[3];
+  const char* timeFilename = argv[4];
+  const char* channelAFilename = argv[5];
+  const char* channelBFilename = argv[6];
+  const char* channelCFilename = argv[7];
+  const char* channelDFilename = argv[8];
+  sampleReader.init(chunkSize, timeFilename, channelAFilename, channelBFilename, channelCFilename, channelDFilename);
+
 
   // Parse the entire document in one go:
   try

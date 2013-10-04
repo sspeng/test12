@@ -1,16 +1,15 @@
 #include <fstream>
 #include <time.h>
 
-#include "../timespecOperators.h"
+#include "../../evaluate/timespecOperators.h"
 
 
 int main() {
 
-  std::ofstream time, voltage, current;
+  std::ofstream time, channelX;
 
   time.open("time.dat", std::ios::out | std::ios::binary | std::ios::trunc );
-  voltage.open("voltage.dat", std::ios::out | std::ios::binary | std::ios::trunc );
-  current.open("current.dat", std::ios::out | std::ios::binary | std::ios::trunc );
+  channelX.open("channelX.dat", std::ios::out | std::ios::binary | std::ios::trunc );
 
   timespec begin, end, interval;
   begin.tv_sec = 1379405778;
@@ -23,15 +22,13 @@ int main() {
 
   for (timespec it = begin; end > it;) {
     for (int j=0; j<1000; j++) {
-      voltage.write((char*)&one, sizeof(double));
-      current.write((char*)&one, sizeof(double));
+      channelX.write((char*)&one, sizeof(double));
     }
     it = it + interval;
     time.write((char*)&it, sizeof(timespec));
   }
 
   time.close();
-  voltage.close();
-  current.close();
+  channelX.close();
 
 }

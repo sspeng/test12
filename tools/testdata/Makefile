@@ -1,6 +1,6 @@
 CXX = g++
 
-SRC = generator.cpp ../timespecOperators.cpp
+SRC = generator.cpp ../../evaluate/timespecOperators.cpp
 
 IFLAGS = 
 
