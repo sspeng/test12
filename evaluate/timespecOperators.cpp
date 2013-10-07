@@ -1,6 +1,11 @@
 #include "timespecOperators.h"
 
 
+// TODO: handle truncation errors on tv_nsec
+// TODO: Test for overflows is actually done by GCC's -trapv-flag.
+//       Do explicit tests in sourcecode instead!
+
+
 const unsigned billion = 1000000000;
 
 
@@ -78,4 +83,14 @@ long double operator/(const timespec& lhs, const timespec& rhs) {
   long long lhs_nsec = (long long)lhs.tv_sec * (long long)billion + (long long)lhs.tv_nsec;
   long long rhs_nsec = (long long)rhs.tv_sec * (long long)billion + (long long)rhs.tv_nsec;
   return (long double)lhs_nsec / (long double)rhs_nsec;
+}
+
+
+timespec min(const timespec& lhs, const timespec& rhs) {
+  return (lhs > rhs ? rhs : lhs);
+}
+
+
+timespec max(const timespec& lhs, const timespec& rhs) {
+  return (lhs > rhs ? lhs : rhs);
 }

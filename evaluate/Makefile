@@ -1,5 +1,7 @@
 CXX = g++
 
+CXXFLAGS = -Wall -g -ftrapv
+
 SRC = logfileReader.cpp timespecOperators.cpp sampleReader.cpp profileMerger.cpp evaluate.cpp
 
 IFLAGS = -I /usr/include/libxml++-2.6/ \
@@ -16,7 +18,7 @@ STATICLIBS = /usr/lib64/libxml++-2.6.so
 DSTNAME = evaluate
 
 all:
-	$(CXX) -Wall -g $(SRC) $(IFLAGS) $(STATICLIBS) -o $(DSTNAME)
+	$(CXX) $(CXXFLAGS) $(SRC) $(IFLAGS) $(STATICLIBS) -o $(DSTNAME)
 
 clean:
 	rm -f $(DSTNAME)

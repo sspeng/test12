@@ -63,12 +63,24 @@ unsigned SampleReader::enclosingSample(timespec time) {
 
 
 timespec SampleReader::startTime(unsigned sample) {
+// TODO: improve computation with respect to precision
   return bufferBegin + (sample * sampleWidth);
 }
 
 
 timespec SampleReader::endTime(unsigned sample) {
+// TODO: improve computation with respect to precision
   return bufferBegin + ((sample + 1) * sampleWidth);
+}
+
+
+timespec SampleReader::startTimeOfEnclosingSample(timespec time) {
+  return min(startTime(enclosingSample(time)), time);
+}
+
+
+timespec SampleReader::endTimeOfEnclosingSample(timespec time) {
+  return max(endTime(enclosingSample(time)), time);
 }
 
 
@@ -93,7 +105,7 @@ double SampleReader::getEnergy(timespec intervalEnd) {
     lastSample = enclosingSample(end);
 
     // account for missing part of (partial) first sample
-    lackingFirstSampleFraction = ( (begin - startTime(enclosingSample(begin))) / sampleWidth );
+    lackingFirstSampleFraction = ( (begin - startTimeOfEnclosingSample(begin)) / sampleWidth );
     energy -= 0.5 * channelABuffer[firstSample] * channelBBuffer[firstSample] * getDouble(sampleWidth) * lackingFirstSampleFraction;
     energy -= 0.5 * channelCBuffer[firstSample] * channelDBuffer[firstSample] * getDouble(sampleWidth) * lackingFirstSampleFraction;
 
@@ -104,7 +116,7 @@ double SampleReader::getEnergy(timespec intervalEnd) {
     }
 
     // account for missing part of (partial) last sample
-    lackingLastSampleFraction = ( (endTime(enclosingSample(end)) - end) / sampleWidth );
+    lackingLastSampleFraction = ( (endTimeOfEnclosingSample(end) - end) / sampleWidth );
     energy -= 0.5 * channelABuffer[lastSample] * channelBBuffer[lastSample] * getDouble(sampleWidth) * lackingLastSampleFraction;
     energy -= 0.5 * channelCBuffer[lastSample] * channelDBuffer[lastSample] * getDouble(sampleWidth) * lackingLastSampleFraction;
 

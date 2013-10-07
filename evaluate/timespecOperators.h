@@ -12,3 +12,5 @@ timespec operator-(const timespec& lhs, const timespec& rhs);
 timespec operator*(const unsigned& lhs, const timespec& rhs);
 timespec operator/(const timespec& lhs, const unsigned& rhs);
 long double operator/(const timespec& lhs, const timespec& rhs);
+timespec min(const timespec& lhs, const timespec& rhs);
+timespec max(const timespec& lhs, const timespec& rhs);

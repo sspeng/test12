@@ -18,6 +18,8 @@ private:
   unsigned enclosingSample(timespec time);
   timespec startTime(unsigned sample);
   timespec endTime(unsigned sample);
+  timespec startTimeOfEnclosingSample(timespec time);
+  timespec endTimeOfEnclosingSample(timespec time);
 
 
 public:

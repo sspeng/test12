@@ -12,9 +12,9 @@ int main() {
   channelX.open("channelX.dat", std::ios::out | std::ios::binary | std::ios::trunc );
 
   timespec begin, end, interval;
-  begin.tv_sec = 1379405778;
+  begin.tv_sec = 1380731082;
   begin.tv_nsec = 0;
-  end.tv_sec = 1379406890;
+  end.tv_sec = 1380731083;
   end.tv_nsec = 0;
   interval.tv_sec = 0;
   interval.tv_nsec = 60000000;
