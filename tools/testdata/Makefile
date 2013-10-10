@@ -1,16 +1,12 @@
 CXX = g++
 
-SRC = generator.cpp ../../evaluate/timespecOperators.cpp
+CXXFLAGS = -Wall -g -ftrapv
 
-IFLAGS = 
+SRC = ../../evaluate/timespecOperators.h ../../evaluate/timespecOperators.cpp generator.cpp
 
-STATICLIBS =
-
-DSTNAME = generator
-
-all:
-	$(CXX) -Wall -g $(SRC) $(IFLAGS) $(STATICLIBS) -o $(DSTNAME)
+all:	$(SRC)
+	$(CXX) $(CXXFLAGS) $(SRC) -o generator
 
 clean:
-	rm -f *.dat $(DSTNAME)
+	rm -f *.dat generator
 

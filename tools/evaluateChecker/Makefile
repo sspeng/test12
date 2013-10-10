@@ -1,6 +1,6 @@
 CXX = g++
 
-SRC = checker.cpp profileReader.cpp
+SRC = evaluateChecker.cpp profileReader.h profileReader.cpp
 
 IFLAGS = -I /usr/include/libxml++-2.6/ \
          -I /usr/include/glibmm-2.4/ \
@@ -13,9 +13,9 @@ IFLAGS = -I /usr/include/libxml++-2.6/ \
 
 STATICLIBS = /usr/lib64/libxml++-2.6.so
 
-DSTNAME = checker
+DSTNAME = evaluateChecker
 
-all:
+all:	$(SRC)
 	$(CXX) -Wall -g $(SRC) $(IFLAGS) $(STATICLIBS) -o $(DSTNAME)
 
 clean:

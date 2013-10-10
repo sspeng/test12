@@ -2,7 +2,12 @@ CXX = g++
 
 CXXFLAGS = -Wall -g -ftrapv
 
-SRC = logfileReader.cpp timespecOperators.cpp sampleReader.cpp profileMerger.cpp evaluate.cpp
+SRC = commonTypes.h \
+      logfileReader.h logfileReader.cpp \
+      timespecOperators.h timespecOperators.cpp \
+      sampleReader.h sampleReader.cpp \
+      profileMerger.h profileMerger.cpp \
+      evaluate.cpp
 
 IFLAGS = -I /usr/include/libxml++-2.6/ \
          -I /usr/include/glibmm-2.4/ \
@@ -15,11 +20,9 @@ IFLAGS = -I /usr/include/libxml++-2.6/ \
 
 STATICLIBS = /usr/lib64/libxml++-2.6.so
 
-DSTNAME = evaluate
-
-all:
-	$(CXX) $(CXXFLAGS) $(SRC) $(IFLAGS) $(STATICLIBS) -o $(DSTNAME)
+all:	$(SRC)
+	$(CXX) $(CXXFLAGS) $(IFLAGS) $(SRC) $(STATICLIBS) -o evaluate
 
 clean:
-	rm -f $(DSTNAME)
+	rm -f evaluate
 
