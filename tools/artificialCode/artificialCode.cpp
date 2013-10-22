@@ -1,53 +1,53 @@
+#include <unistd.h>
 #include <time.h>
 #include <iostream>
-#include <cstdlib>
+
+#ifdef GENUINE_SHINY
+#include "Shiny.h"
+#else // UG_PROFILER_SHINY
+#include "common/profiler/profiler.h"
+#include "common/profiler/profile_node.h"
+#include <mpi.h>
+#endif
 
 
-timespec begin[10], end[10];
 double a[100000], b[100000], c[100000];
 
 
 void f(int i) {
-  clock_gettime(CLOCK_REALTIME, &(begin[i]));
+  PROFILE_BEGIN(f);
   for (int j=0; j<300; j++) {
     for (int k=0; k<100000; k++) {
       c[k] = a[k] / b[k];
     }
   }
-  clock_gettime(CLOCK_REALTIME, &(end[i]));
+  PROFILE_END();
 }
 
 
-int main(int argc, char* argv[]) {
-
+void g() {
+  PROFILE_BEGIN(g);
   usleep(150000);
   for (int i=0; i<10; i++) {
     f(i);
     usleep(150000);
   }
-
-  for (int i=0; i<10; i++) {
-    std::cout << "begin[" << i << "]=" << begin[i].tv_sec << "." << begin[i].tv_nsec << std::endl;
-    std::cout << "  end[" << i << "]=" << end[i].tv_sec << "." << end[i].tv_nsec << std::endl;
-  }
+  PROFILE_END();
+}
 
 
-  /*
-  // legacy code:
-  timespec begin, end, dummy;
+int main(int argc, char* argv[]) {
+  PROFILE_BEGIN(m);
+  g();
+  PROFILE_END();
 
-  double a[100000], b[100000], c[100000];
-
-  clock_gettime(CLOCK_REALTIME, &begin);
-  for (int j=0; j<10000; j++) {
-    for (int i=0; i<100000; i++) {
-      c[i] = a[i] / b[i];
-    }
-  }
-  clock_gettime(CLOCK_REALTIME, &end);
-
-  std::cerr << "begin=" << begin.tv_sec << "." << begin.tv_nsec << std::endl;
-  std::cerr << "end  =" << end.tv_sec << "." << end.tv_nsec << std::endl;
-  */
-
+#ifdef GENUINE_SHINY
+  PROFILE_UPDATE();
+  PROFILE_OUTPUT(NULL);
+#else // UG_PROFILER_SHINY
+  const char* filename = "artificialCode.pdxml";
+  MPI_Init(&argc, &argv); // WriteProfileDataXML needs MPI environment
+  ug::WriteProfileDataXML(filename);
+  MPI_Finalize();
+#endif
 }

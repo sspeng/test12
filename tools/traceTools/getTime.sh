@@ -1,3 +1,3 @@
 #!/bin/bash
 
-~/scratch/energyprofiler/trunk/tools/sample_data_tester/time_tester fullTime.dat | head -n $(($1 + 1)) | tail -n 1
+~/scratch/energyprofiler/trunk/tools/sampleDataTester/timeTester $1 | head -n $(($2 + 1)) | tail -n 1

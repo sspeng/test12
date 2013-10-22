@@ -2,6 +2,8 @@
 
 #include "timespecOperators.h"
 #include <cmath>
+#include <iostream>
+#include <cstdlib>
 
 
 void SampleReader::init(const unsigned chunkSize,
@@ -91,6 +93,11 @@ double SampleReader::getEnergy(timespec intervalEnd) {
   timespec begin, end;
   unsigned firstSample, lastSample;
   double lackingFirstSampleFraction, lackingLastSampleFraction;
+
+  if ( !(intervalEnd >= examinedSoFar) ) {
+      std::cerr << "Timestamp detected which is prior to previous one, exiting!" << std::endl;
+      exit(EXIT_FAILURE);
+  }
 
   while (intervalEnd > examinedSoFar) {
 

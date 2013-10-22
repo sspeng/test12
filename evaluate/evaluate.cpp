@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
     }
   catch(const xmlpp::exception& ex)
     {
-      std::cout << "libxml++ exception: " << ex.what() << std::endl;
+      std::cerr << "libxml++ exception: " << ex.what() << std::endl;
     }
 
 

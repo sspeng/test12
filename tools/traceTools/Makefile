@@ -17,19 +17,20 @@ interpolateTimestampsSRC = ../../evaluate/timespecOperators.h ../../evaluate/tim
 
 attachTimestampsSRC = attachTimestamps.cpp
 
-attachLogsSRC = ../../evaluate/timespecOperators.h ../../evaluate/timespecOperators.cpp traceReader.h traceReader.cpp attachLogs.cpp
+attachLogsSRC = profileReader.h profileReader.cpp ../../evaluate/timespecOperators.h ../../evaluate/timespecOperators.cpp traceReader.h traceReader.cpp attachLogs.cpp
 
 all:	interpolateTimestamps attachTimestamps attachLogs
 
 interpolateTimestamps:	$(interpolateTimestampsSRC)
-	$(CXX) $(CXXFLAGS) $(interpolateTimestampsSRC) -o interpolateTimestamps
+	$(CXX) $(CXXFLAGS) $(interpolateTimestampsSRC) -o $@
 
 attachTimestamps:	$(attachTimestampsSRC)
-	$(CXX) $(CXXFLAGS) -lrt $(attachTimestampsSRC) -o attachTimestamps
+	$(CXX) $(CXXFLAGS) -lrt $(attachTimestampsSRC) -o $@
 
 attachLogs:		$(attachLogsSRC)
-	$(CXX) $(CXXFLAGS) $(attachLogsSRC) $(IFLAGS) $(STATICLIBS) -o attachLogs
+	$(CXX) $(CXXFLAGS) $(attachLogsSRC) $(IFLAGS) $(STATICLIBS) -o $@
 
 clean:
 	rm -f interpolateTimestamps attachTimestamps attachLogs
 
+.PHONY: all clean

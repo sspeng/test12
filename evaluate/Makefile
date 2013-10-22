@@ -26,3 +26,4 @@ all:	$(SRC)
 clean:
 	rm -f evaluate
 
+.PHONY: all clean

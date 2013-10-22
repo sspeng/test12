@@ -9,11 +9,12 @@ doubleTesterSRC = doubleTester.cpp
 all:	timeTester doubleTester
 
 timeTester:	$(timeTesterSRC)
-	$(CXX) $(CXXFLAGS) $(timeTesterSRC) -o timeTester
+	$(CXX) $(CXXFLAGS) $(timeTesterSRC) -o $@
 
 doubleTester:	$(doubleTesterSRC)
-	$(CXX) $(CXXFLAGS) $(doubleTesterSRC) -o doubleTester
+	$(CXX) $(CXXFLAGS) $(doubleTesterSRC) -o $@
 
 clean:
 	rm -f timeTester doubleTester
 
+.PHONY: all clean

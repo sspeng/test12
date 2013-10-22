@@ -1,26 +1,25 @@
-// TODO: reuse ../../evaluate/logfileReader.* instead?
+// TODO: reuse ../../evaluate/profileMerger.* instead?
 
 #include <libxml++/libxml++.h>
 
-#include "../../evaluate/commonTypes.h"
 
-
-
-class TraceReader : public xmlpp::SaxParser
+class ProfileReader : public xmlpp::SaxParser
 {
 public:
 
-  TraceReader();
-  virtual ~TraceReader();
+  ProfileReader();
+  virtual ~ProfileReader();
 
-  void registerNewMarkerCallback(void (*handler)(Marker marker));
+  void registerNewEntryCallback(void (*handler)(const Glib::ustring& name, void* id));
 
- protected:
+protected:
 
-  enum { START, ID, STOP, OTHER } state;
-  Marker currentMarker;
+  enum { NAME, ID, OTHER } state;
 
-  void (*handleNewMarker)(Marker marker);
+  Glib::ustring routineName;
+  void* routineId;
+
+  void (*handleNewEntry)(const Glib::ustring& name, void* id);
 
   //overrides:
   virtual void on_start_document();

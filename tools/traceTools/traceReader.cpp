@@ -1,52 +1,24 @@
 #include "traceReader.h"
 
-#include <cstdio>
-#include <stdlib.h>
+#include <fstream>
 #include <iostream>
-#include <time.h>
-
-#include "../../evaluate/timespecOperators.h"
+#include <stdlib.h>
 
 
 
-void TraceReader::handleMarker() {
-
-  static timespec currentTime;
-  static double currentSample;
-
-  while (currentMarker.time > currentTime) {
-    timeFile.read((char*)&currentTime, sizeof(timespec));
-    sampleFile.read((char*)&currentSample, sizeof(double));
-    if (currentMarker.time > currentTime) {
-      attachedSampleFile << '.' << "\t\t" << currentSample << std::endl;
-    }
-  }
-
-  if (currentMarker.isStartMarker) {
-    attachedSampleFile << currentMarker.routine << "_BEGIN\t" << currentSample << std::endl;
-    callstack.push(currentMarker);
-  } else {
-    attachedSampleFile << callstack.top().routine << "_END\t" << currentSample << std::endl;
-    callstack.pop();
-  }
-
+void TraceReader::registerNewMarkerCallback(void (*handler)(Marker newMarker)) {
+  handleNewMarker = handler;
 }
 
 
-TraceReader::TraceReader(char* sampleFilename, char* timeFilename, char* attachedSampleFilename)
+TraceReader::TraceReader()
   : xmlpp::SaxParser()
 {
-  timeFile.open(timeFilename, std::ios::in | std::ios::binary);
-  sampleFile.open(sampleFilename, std::ios::in | std::ios::binary);
-  attachedSampleFile.open(attachedSampleFilename, std::ios::out | std::ios::trunc );
 }
 
 
 TraceReader::~TraceReader()
 {
-  timeFile.close();
-  sampleFile.close();
-  attachedSampleFile.close();
 }
 
 
@@ -91,11 +63,11 @@ void TraceReader::on_end_element(const Glib::ustring& name)
     }
   else if (name == "id")
     {
-      handleMarker(); // we didn't had the full information before!
+      handleNewMarker(currentMarker); // we didn't had the full information before!
     }
   else if (name == "stop")
     {
-      handleMarker();
+      handleNewMarker(currentMarker);
     }
   else // remaining tags
     {

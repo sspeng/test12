@@ -13,11 +13,10 @@ IFLAGS = -I /usr/include/libxml++-2.6/ \
 
 STATICLIBS = /usr/lib64/libxml++-2.6.so
 
-DSTNAME = evaluateChecker
-
 all:	$(SRC)
-	$(CXX) -Wall -g $(SRC) $(IFLAGS) $(STATICLIBS) -o $(DSTNAME)
+	$(CXX) -Wall -g $(SRC) $(IFLAGS) $(STATICLIBS) -o evaluateChecker
 
 clean:
-	rm -f $(DSTNAME)
+	rm -f evaluateChecker
 
+.PHONY: all clean

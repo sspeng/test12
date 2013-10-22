@@ -10,3 +10,4 @@ all:	$(SRC)
 clean:
 	rm -f *.dat generator
 
+.PHONY: all clean
