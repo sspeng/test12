@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 {
   if(argc != 9)
     {
-      std::cout << "usage: evaluate <call logfile> <time profile> <merged profile> <timestamps> <channelA> <channelB> <channelC> <channelD>\n" << std::endl;
+      std::cout << "usage: evaluate <call logfile> <time profile> <merged profile> <timestamps> <channelA> <channelB> <channelC> <channelD>" << std::endl;
       exit(EXIT_FAILURE);
     }
 

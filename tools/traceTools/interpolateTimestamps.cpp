@@ -9,7 +9,7 @@
 int main(int argc, char* argv[]) {
 
   if(argc != 4) {
-    std::cout << "usage: timePreprocessor <inFile> <outFile> <chunkSize>" << std::endl;
+    std::cout << "usage: interpolateTimestamps <inFile> <outFile> <chunkSize>" << std::endl;
     exit(EXIT_FAILURE);
   }
 

@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <time.h>
 #include <iostream>
+#include <iomanip>
 
 #include "../../evaluate/timespecOperators.h"
 
@@ -116,12 +117,12 @@ int main() {
 
 
   resultA = (endA - beginA);
-  std::cout << resultA.tv_sec << "." << resultA.tv_nsec << std::endl;
+  std::cout << resultA.tv_sec << "." << std::setfill('0') << std::setw(9) << resultA.tv_nsec << std::endl;
   resultB = (endB - beginB);
-  std::cout << resultB.tv_sec << "." << resultB.tv_nsec << std::endl;
+  std::cout << resultB.tv_sec << "." << std::setfill('0') << std::setw(9) << resultB.tv_nsec << std::endl;
   resultC = (endC - beginC);
-  std::cout << resultC.tv_sec << "." << resultC.tv_nsec << std::endl;
+  std::cout << resultC.tv_sec << "." << std::setfill('0') << std::setw(9) << resultC.tv_nsec << std::endl;
   resultD = (endD - beginD);
-  std::cout << resultD.tv_sec << "." << resultD.tv_nsec << std::endl;
+  std::cout << resultD.tv_sec << "." << std::setfill('0') << std::setw(9) << resultD.tv_nsec << std::endl;
 
 }

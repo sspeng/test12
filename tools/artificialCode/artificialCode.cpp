@@ -7,6 +7,7 @@
 #else // UG_PROFILER_SHINY
 #include "common/profiler/profiler.h"
 #include "common/profiler/profile_node.h"
+#include "common/profiler/profile_call.h"
 #include <mpi.h>
 #endif
 
@@ -16,7 +17,7 @@ double a[100000], b[100000], c[100000];
 
 void f(int i) {
   PROFILE_BEGIN(f);
-  for (int j=0; j<300; j++) {
+  for (int j=0; j<20; j++) {
     for (int k=0; k<100000; k++) {
       c[k] = a[k] / b[k];
     }
@@ -45,7 +46,7 @@ int main(int argc, char* argv[]) {
   PROFILE_UPDATE();
   PROFILE_OUTPUT(NULL);
 #else // UG_PROFILER_SHINY
-  const char* filename = "artificialCode.pdxml";
+  const char* filename = "time.pdxml";
   MPI_Init(&argc, &argv); // WriteProfileDataXML needs MPI environment
   ug::WriteProfileDataXML(filename);
   MPI_Finalize();

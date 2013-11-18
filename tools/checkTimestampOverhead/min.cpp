@@ -1,6 +1,8 @@
 #include <time.h>
 #include <sys/time.h>
 #include <iostream>
+#include <iomanip>
+
 
 int main() {
 
@@ -29,6 +31,6 @@ int main() {
     result.tv_sec = end.tv_sec - begin.tv_sec;
     result.tv_nsec = end.tv_nsec - begin.tv_nsec;
   }
-  std::cout << result.tv_sec << "." << result.tv_nsec << std::endl;
+  std::cout << result.tv_sec << "." << std::setfill('0') << std::setw(9) << result.tv_nsec << std::endl;
 
 }
