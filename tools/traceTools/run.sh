@@ -7,7 +7,9 @@ localWorkDir=$localProjectRoot/runs/scratch/
 remoteWorkDir=$remoteProjectRoot/runs/scratch/
 
 runAdditest=$localProjectRoot/tools/traceTools/runAdditest.sh
-applicationCode=$remoteProjectRoot/tools/artificialCode/artificialCode
+#applicationCode=$remoteProjectRoot/tools/artificialCode/artificialCode
+#applicationCode="/home/hpcbjdic/scratch/ug4/trunk/bin/ugshell -ex ~/scratch/tut08_nonlinear_conv_diff_using_self_coupling.lua -dim 2 -numTotalRefs 4 -numTimeSteps 1"
+applicationCode="/home/hpcbjdic/scratch/ug4_new/bin/ugshell -ex tutorials/tut08_nonlinear_conv_diff_using_self_coupling.lua -numTotalRefs 5 -baseLevel 5 -numTimeSteps 1"
 
 
 function checkSuccess () {

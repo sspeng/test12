@@ -8,9 +8,9 @@ i=1		# experiment ID
 f=10		# sample rate (us)
 s=1000		# records per chunk
 # 6s
-n=100000	# total number of records
+#n=100000	# total number of records
 # 1min
-#n=1000000	# total number of records
+n=1000000	# total number of records
 # 10min
 #n=10000000	# total number of records
 c=6		# number of channels
