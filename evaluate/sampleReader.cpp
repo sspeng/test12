@@ -3,7 +3,10 @@
 #include "timespecOperators.h"
 #include <cmath>
 #include <iostream>
+#include <iomanip> // TODO: remove?
 #include <cstdlib>
+
+#define SYSTEM_POWER_OFFSET 12 // power offset drawn by an idle system (power supply, HDD, chipset, etc.)
 
 
 void SampleReader::init(const unsigned chunkSize,
@@ -86,6 +89,13 @@ timespec SampleReader::endTimeOfEnclosingSample(timespec time) {
 }
 
 
+double SampleReader::getEnergyOfSample(const unsigned sample, const double fraction) {
+  return ( (   (channelABuffer[sample] * channelCBuffer[sample])
+             + (channelBBuffer[sample] * channelDBuffer[sample])
+	     - SYSTEM_POWER_OFFSET)
+           * getDouble(sampleWidth) * fraction );
+}
+
 double SampleReader::getEnergy(timespec intervalEnd) {
   // TODO: use interval arithmetic to account for offset of clocks?
 
@@ -95,8 +105,11 @@ double SampleReader::getEnergy(timespec intervalEnd) {
   double lackingFirstSampleFraction, lackingLastSampleFraction;
 
   if ( !(intervalEnd >= examinedSoFar) ) {
-      std::cerr << "Timestamp detected which is prior to previous one, exiting!" << std::endl;
-      exit(EXIT_FAILURE);
+      std::cerr << "Warning: Timestamp detected which is prior to previous one, exiting!" << std::endl;
+      //std::cerr << "         intervalEnd   = " << intervalEnd.tv_sec << "." << std::setfill('0') << std::setw(9) << intervalEnd.tv_nsec << std::endl;
+      //std::cerr << "         examinedSoFar = " << examinedSoFar.tv_sec << "." << std::setfill('0') << std::setw(9) << examinedSoFar.tv_nsec << std::endl;
+      //std::cerr << std::endl;
+      //exit(EXIT_FAILURE);
   }
 
   while (intervalEnd > examinedSoFar) {
@@ -113,19 +126,16 @@ double SampleReader::getEnergy(timespec intervalEnd) {
 
     // account for missing part of (partial) first sample
     lackingFirstSampleFraction = ( (begin - startTimeOfEnclosingSample(begin)) / sampleWidth );
-    energy -= 0.5 * channelABuffer[firstSample] * channelBBuffer[firstSample] * getDouble(sampleWidth) * lackingFirstSampleFraction;
-    energy -= 0.5 * channelCBuffer[firstSample] * channelDBuffer[firstSample] * getDouble(sampleWidth) * lackingFirstSampleFraction;
+    energy += getEnergyOfSample(firstSample, -lackingFirstSampleFraction);
 
     // account for boundary and (full) inner samples
     for (unsigned currentSample = firstSample; currentSample <= lastSample; currentSample++) {
-      energy += 0.5 * channelABuffer[currentSample] * channelBBuffer[currentSample] * getDouble(sampleWidth);
-      energy += 0.5 * channelCBuffer[currentSample] * channelDBuffer[currentSample] * getDouble(sampleWidth);
+      energy += getEnergyOfSample(currentSample, 1);
     }
 
     // account for missing part of (partial) last sample
     lackingLastSampleFraction = ( (endTimeOfEnclosingSample(end) - end) / sampleWidth );
-    energy -= 0.5 * channelABuffer[lastSample] * channelBBuffer[lastSample] * getDouble(sampleWidth) * lackingLastSampleFraction;
-    energy -= 0.5 * channelCBuffer[lastSample] * channelDBuffer[lastSample] * getDouble(sampleWidth) * lackingLastSampleFraction;
+    energy += getEnergyOfSample(lastSample, -lackingLastSampleFraction);
 
     examinedSoFar = end;
   }

@@ -20,6 +20,7 @@ private:
   timespec endTime(unsigned sample);
   timespec startTimeOfEnclosingSample(timespec time);
   timespec endTimeOfEnclosingSample(timespec time);
+  double getEnergyOfSample(const unsigned sample, const double fraction);
 
 
 public:

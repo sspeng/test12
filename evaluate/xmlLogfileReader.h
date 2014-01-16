@@ -1,22 +1,20 @@
 #include <libxml++/libxml++.h>
-#include <fstream>
 
 #include "commonTypes.h"
 
 
-class ProfileMerger : public xmlpp::SaxParser
+class XMLLogfileReader : public xmlpp::SaxParser
 {
 public:
-  ProfileMerger();
-  virtual ~ProfileMerger();
-  void merge(const char* inputFilename, std::map<routineID, Energies>* routines, const char* outputFilename);
+  enum { CALL, START, ID, STOP, OTHER } state;
+  Marker currentMarker;
 
-protected:
-  std::map<routineID, Energies>* routines;
-  std::ofstream outfile;
+  XMLLogfileReader();
+  virtual ~XMLLogfileReader();
+  void registerNewMarkerCallback(void (*handler)(Marker marker));
 
-  bool parseID;
-  void* currentID;
+ protected:
+  void (*handleNewMarker)(Marker marker);
 
   //overrides:
   virtual void on_start_document();

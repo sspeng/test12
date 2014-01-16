@@ -1,36 +1,36 @@
-#include "logfileReader.h"
+#include "xmlLogfileReader.h"
 
 #include <cstdio>
 #include <stdlib.h>
 #include <iostream>
 
 
-void LogfileReader::registerNewMarkerCallback(void (*handler)(Marker newMarker)) {
-  handleNewMarker = handler;
-}
-
-
-LogfileReader::LogfileReader()
+XMLLogfileReader::XMLLogfileReader()
   : xmlpp::SaxParser()
 {
 }
 
 
-LogfileReader::~LogfileReader()
+XMLLogfileReader::~XMLLogfileReader()
 {
 }
 
 
-void LogfileReader::on_start_document()
+void XMLLogfileReader::registerNewMarkerCallback(void (*handler)(Marker newMarker)) {
+  handleNewMarker = handler;
+}
+
+
+void XMLLogfileReader::on_start_document()
 {
 }
 
 
-void LogfileReader::on_end_document()
+void XMLLogfileReader::on_end_document()
 {
 }
 
-void LogfileReader::on_start_element(const Glib::ustring& name,
+void XMLLogfileReader::on_start_element(const Glib::ustring& name,
 				     const AttributeList& attributes)
 {
   if (name == "call")
@@ -59,7 +59,7 @@ void LogfileReader::on_start_element(const Glib::ustring& name,
 }
 
 
-void LogfileReader::on_end_element(const Glib::ustring& name)
+void XMLLogfileReader::on_end_element(const Glib::ustring& name)
 {
   if (name == "call")
     {
@@ -81,7 +81,7 @@ void LogfileReader::on_end_element(const Glib::ustring& name)
 }
 
 
-void LogfileReader::on_characters(const Glib::ustring& text)
+void XMLLogfileReader::on_characters(const Glib::ustring& text)
 {
   if (state == CALL)
     {
@@ -104,25 +104,25 @@ void LogfileReader::on_characters(const Glib::ustring& text)
 }
 
 
-void LogfileReader::on_comment(const Glib::ustring& text)
+void XMLLogfileReader::on_comment(const Glib::ustring& text)
 {
 }
 
 
-void LogfileReader::on_warning(const Glib::ustring& text)
+void XMLLogfileReader::on_warning(const Glib::ustring& text)
 {
   std::cout << "parser warning: " << text << std::endl;
 }
 
 
-void LogfileReader::on_error(const Glib::ustring& text)
+void XMLLogfileReader::on_error(const Glib::ustring& text)
 {
   std::cout << "parser error: " << text << std::endl;
   exit(EXIT_FAILURE);
 }
 
 
-void LogfileReader::on_fatal_error(const Glib::ustring& text)
+void XMLLogfileReader::on_fatal_error(const Glib::ustring& text)
 {
   std::cout << "parser fatal error: " << text << std::endl;
   exit(EXIT_FAILURE);
