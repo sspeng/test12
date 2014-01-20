@@ -1,4 +1,4 @@
-// TODO: reuse ../../evaluate/profileMerger.* instead?
+// TODO: reuse ../../evaluate/xmlOutput.* instead?
 
 #include <libxml++/libxml++.h>
 

@@ -1,4 +1,4 @@
-#include "traceReader.h"
+#include "xmlTraceReader.h"
 
 #include <fstream>
 #include <iostream>
@@ -6,32 +6,32 @@
 
 
 
-void TraceReader::registerNewMarkerCallback(void (*handler)(Marker newMarker)) {
+void XMLTraceReader::registerNewMarkerCallback(void (*handler)(Marker newMarker)) {
   handleNewMarker = handler;
 }
 
 
-TraceReader::TraceReader()
+XMLTraceReader::XMLTraceReader()
   : xmlpp::SaxParser()
 {
 }
 
 
-TraceReader::~TraceReader()
+XMLTraceReader::~XMLTraceReader()
 {
 }
 
 
-void TraceReader::on_start_document()
+void XMLTraceReader::on_start_document()
 {
 }
 
 
-void TraceReader::on_end_document()
+void XMLTraceReader::on_end_document()
 {
 }
 
-void TraceReader::on_start_element(const Glib::ustring& name,
+void XMLTraceReader::on_start_element(const Glib::ustring& name,
 				     const AttributeList& attributes)
 {
   if (name == "start")
@@ -56,7 +56,7 @@ void TraceReader::on_start_element(const Glib::ustring& name,
 }
 
 
-void TraceReader::on_end_element(const Glib::ustring& name)
+void XMLTraceReader::on_end_element(const Glib::ustring& name)
 {
   if (name == "start")
     {
@@ -75,7 +75,7 @@ void TraceReader::on_end_element(const Glib::ustring& name)
 }
 
 
-void TraceReader::on_characters(const Glib::ustring& text)
+void XMLTraceReader::on_characters(const Glib::ustring& text)
 {
   if (state == START)
     {
@@ -95,25 +95,25 @@ void TraceReader::on_characters(const Glib::ustring& text)
 }
 
 
-void TraceReader::on_comment(const Glib::ustring& text)
+void XMLTraceReader::on_comment(const Glib::ustring& text)
 {
 }
 
 
-void TraceReader::on_warning(const Glib::ustring& text)
+void XMLTraceReader::on_warning(const Glib::ustring& text)
 {
   std::cout << "parser warning: " << text << std::endl;
 }
 
 
-void TraceReader::on_error(const Glib::ustring& text)
+void XMLTraceReader::on_error(const Glib::ustring& text)
 {
   std::cout << "parser error: " << text << std::endl;
   exit(EXIT_FAILURE);
 }
 
 
-void TraceReader::on_fatal_error(const Glib::ustring& text)
+void XMLTraceReader::on_fatal_error(const Glib::ustring& text)
 {
   std::cout << "parser fatal error: " << text << std::endl;
   exit(EXIT_FAILURE);

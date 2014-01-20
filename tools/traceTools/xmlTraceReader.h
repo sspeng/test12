@@ -1,4 +1,4 @@
-// TODO: reuse ../../evaluate/logfileReader.* instead?
+// TODO: reuse ../../evaluate/xmlLogfileReader.* instead?
 
 #include <libxml++/libxml++.h>
 
@@ -6,12 +6,12 @@
 
 
 
-class TraceReader : public xmlpp::SaxParser
+class XMLTraceReader : public xmlpp::SaxParser
 {
 public:
 
-  TraceReader();
-  virtual ~TraceReader();
+  XMLTraceReader();
+  virtual ~XMLTraceReader();
 
   void registerNewMarkerCallback(void (*handler)(Marker marker));
 

@@ -1,3 +1,5 @@
+// TODO: rename to CSVLogfileReader
+
 #include "commonTypes.h"
 
 

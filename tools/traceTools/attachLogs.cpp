@@ -1,8 +1,16 @@
+// TODO: consolidate module names (logfile vs. trace)
+#ifdef SIMPLE_TRACE_READER
+#include "../../evaluate/simpleLogfileReader.h"
+#endif
+#ifdef XML_TRACE_READER
 #include "profileReader.h"
-#include "traceReader.h"
+#include "xmlTraceReader.h"
+#endif
 
 #include <fstream>
+#ifdef XML_TRACE_READER
 #include <map>
+#endif
 #include <stack>
 #include <iostream>
 #include <stdlib.h>
@@ -13,7 +21,9 @@
 std::ifstream timeFile;
 std::ofstream gnuplotFile;
 
+#ifdef XML_TRACE_READER
 std::map<void*, Glib::ustring> routines;
+#endif
 std::stack<Marker> callstack;
 
 
@@ -37,9 +47,11 @@ void finalize(char* sampleFilename) {
 }
 
 
+#ifdef XML_TRACE_READER
 void handleNewEntry(const Glib::ustring& name, void* id) {
   routines.insert( std::pair<void*, Glib::ustring>(id, name) );
 }
+#endif
 
 
 void handleNewMarker(Marker marker) {
@@ -52,9 +64,14 @@ void handleNewMarker(Marker marker) {
     ticPosition = ++recordNumber;
   }
 
-  gnuplotFile << "\""							\
-	      << (marker.isStartMarker ? routines[marker.routine] : routines[callstack.top().routine]) \
-	      << (marker.isStartMarker ? "_BEGIN" : "_END")		\
+  gnuplotFile << "\"";
+#ifdef SIMPLE_TRACE_READER
+  gnuplotFile << (marker.isStartMarker ? marker.routine : callstack.top().routine);
+#endif
+#ifdef XML_TRACE_READER
+  gnuplotFile << (marker.isStartMarker ? routines[marker.routine] : routines[callstack.top().routine]);
+#endif
+  gnuplotFile << (marker.isStartMarker ? "_BEGIN" : "_END")		\
 	      << "\" "							\
 	      << ticPosition++						\
 	      << ", ";
@@ -70,19 +87,40 @@ void handleNewMarker(Marker marker) {
 
 int main(int argc, char* argv[])
 {
+#ifdef SIMPLE_TRACE_READER
+  if(argc != 5)
+    {
+      std::cout << "usage: attachLogs <sampleFile> <timeFile> <traceFile> <gnuplotFile>" << std::endl;
+      exit(EXIT_FAILURE);
+    }
+#endif
+#ifdef XML_TRACE_READER
   if(argc != 6)
     {
       std::cout << "usage: attachLogs <sampleFile> <timeFile> <traceFile> <profileFile> <gnuplotFile>" << std::endl;
       exit(EXIT_FAILURE);
     }
+#endif
 
+#ifdef SIMPLE_TRACE_READER
+  init(argv[2], argv[4]);
+#endif
+#ifdef XML_TRACE_READER
   init(argv[2], argv[5]);
+#endif
 
+#ifdef XML_TRACE_READER
   ProfileReader profileReader;
   profileReader.registerNewEntryCallback(&handleNewEntry);
   profileReader.parse_file(argv[4]);
+#endif
 
-  TraceReader traceReader;
+#ifdef SIMPLE_TRACE_READER
+  SimpleLogfileReader traceReader;
+#endif
+#ifdef XML_TRACE_READER
+  XMLTraceReader traceReader;
+#endif
   traceReader.registerNewMarkerCallback(&handleNewMarker);
   traceReader.parse_file(argv[3]);
 

@@ -2,6 +2,17 @@ CXX = g++
 
 CXXFLAGS = -Wall -g -ftrapv
 
+ATTACH_LOGS_SIMPLE_TRACE = 1
+#ATTACH_LOGS_XML_TRACE = 1
+
+ifdef ATTACH_LOGS_SIMPLE_TRACE
+DEFS = -D SIMPLE_TRACE_READER
+endif
+ifdef ATTACH_LOGS_XML_TRACE
+DEFS = -D XML_TRACE_READER
+endif
+
+ifdef ATTACH_LOGS_XML_TRACE
 IFLAGS = -I /usr/include/libxml++-2.6/ \
          -I /usr/include/glibmm-2.4/ \
          -I /usr/lib64/glibmm-2.4/include/ \
@@ -12,12 +23,24 @@ IFLAGS = -I /usr/include/libxml++-2.6/ \
          -I /usr/lib64/sigc++-2.0/include/
 
 STATICLIBS = /usr/lib64/libxml++-2.6.so
+endif
 
-interpolateTimestampsSRC = ../../evaluate/timespecOperators.h ../../evaluate/timespecOperators.cpp interpolateTimestamps.cpp
+interpolateTimestampsSRC = ../../evaluate/timespecOperators.h \
+                           ../../evaluate/timespecOperators.cpp \
+                           interpolateTimestamps.cpp
 
 attachTimestampsSRC = attachTimestamps.cpp
 
-attachLogsSRC = profileReader.h profileReader.cpp ../../evaluate/timespecOperators.h ../../evaluate/timespecOperators.cpp traceReader.h traceReader.cpp attachLogs.cpp
+ifdef ATTACH_LOGS_SIMPLE_TRACE
+attachLogsTraceSRC = ../../evaluate/simpleLogfileReader.h ../../evaluate/simpleLogfileReader.cpp
+endif
+ifdef ATTACH_LOGS_XML_TRACE
+attachLogsTraceSRC = profileReader.h profileReader.cpp \
+                     xmlTraceReader.h xmlTraceReader.cpp
+endif
+attachLogsSRC = ../../evaluate/timespecOperators.h ../../evaluate/timespecOperators.cpp \
+                $(attachLogsTraceSRC) \
+                attachLogs.cpp
 
 all:	interpolateTimestamps attachTimestamps attachLogs
 
@@ -28,7 +51,7 @@ attachTimestamps:	$(attachTimestampsSRC)
 	$(CXX) $(CXXFLAGS) -lrt $(attachTimestampsSRC) -o $@
 
 attachLogs:		$(attachLogsSRC)
-	$(CXX) $(CXXFLAGS) $(attachLogsSRC) $(IFLAGS) $(STATICLIBS) -o $@
+	$(CXX) $(CXXFLAGS) $(IFLAGS) $(DEFS) $(attachLogsSRC) $(STATICLIBS) -o $@
 
 clean:
 	rm -f interpolateTimestamps attachTimestamps attachLogs
