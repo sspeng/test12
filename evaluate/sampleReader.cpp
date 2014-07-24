@@ -3,59 +3,64 @@
 #include "timespecOperators.h"
 #include <cmath>
 #include <iostream>
-#include <iomanip> // TODO: remove?
+#include <iomanip> // TODO: remove
 #include <cstdlib>
 
 #define SYSTEM_POWER_OFFSET 12 // power offset drawn by an idle system (power supply, HDD, chipset, etc.)
 
 
-void SampleReader::init(const unsigned chunkSize,
-			const char* timeFilename,
-			const char* channelAFilename,
-			const char* channelBFilename,
-			const char* channelCFilename,
-			const char* channelDFilename) {
+void SampleReader::init(const unsigned chunkSize) {
 
   this->chunkSize = chunkSize;
 
-  timeFile.open(timeFilename, std::ios::in | std::ios::binary);
-  channelAFile.open(channelAFilename, std::ios::in | std::ios::binary);
-  channelBFile.open(channelBFilename, std::ios::in | std::ios::binary);
-  channelCFile.open(channelCFilename, std::ios::in | std::ios::binary);
-  channelDFile.open(channelDFilename, std::ios::in | std::ios::binary);
+  timeFile.open("Time_0.dat", std::ios::in | std::ios::binary);
 
-  channelABuffer = new double[chunkSize];
-  channelBBuffer = new double[chunkSize];
-  channelCBuffer = new double[chunkSize];
-  channelDBuffer = new double[chunkSize];
+  channel0Buffer = new double[chunkSize];
+  channel1Buffer = new double[chunkSize];
 
-  // There's no leading timestamp in the dataset, so we have to read
-  // (and immediately discard) a first chunk to get voltage/current
-  // data together with a _corresponding_ time offset.
-  // As an implication we should assure to start the experiment at
-  // least one chunk after the measurement process!
+  timeFile.read((char*)&bufferEnd, sizeof(timespec));
   getNextChunk();
-  examinedSoFar = bufferEnd;
+  examinedSoFar = bufferBegin;
 }
 
 
 void SampleReader::close() {
   timeFile.close();
-  channelAFile.close();
-  channelBFile.close();
-  channelCFile.close();
-  channelDFile.close();
 }
 
 
 void SampleReader::getNextChunk() {
   bufferBegin = bufferEnd;
   timeFile.read((char*)&bufferEnd, sizeof(timespec));
-  channelAFile.read((char*)channelABuffer, chunkSize * sizeof(double));
-  channelBFile.read((char*)channelBBuffer, chunkSize * sizeof(double));
-  channelCFile.read((char*)channelCBuffer, chunkSize * sizeof(double));
-  channelDFile.read((char*)channelDBuffer, chunkSize * sizeof(double));
+  /*
+    We don't have an end time of the last chunk and therefore can not
+    compute a proper sampleWidth. Hence the last chunk will be
+    discarded. As an implication, we should assure to continue the
+    measurement at least for the duration of one chunk after the
+    experiment has finished.
+  */
+  /*
+    We don't have a start time of the first chunk. Hence we have to
+    skip them to get a proper time. As an implication, we should
+    assure to start the experiment at least one chunk after the
+    measurement.
+  */
+  if (timeFile.eof()) {
+      std::cout << "ERROR: last chunk reached, aborting now." << std::endl;
+      exit(EXIT_FAILURE);
+  }
   sampleWidth = ((bufferEnd - bufferBegin) / chunkSize);
+
+  channel0Filename.str("");
+  channel1Filename.str("");
+  channel0Filename << "Channel_0_" << bufferBegin.tv_sec << "_" << bufferBegin.tv_nsec << ".dat";
+  channel1Filename << "Channel_1_" << bufferBegin.tv_sec << "_" << bufferBegin.tv_nsec << ".dat";
+  channel0File.open(channel0Filename.str().c_str(), std::ios::in | std::ios::binary);
+  channel1File.open(channel1Filename.str().c_str(), std::ios::in | std::ios::binary);
+  channel0File.read((char*)channel0Buffer, chunkSize * sizeof(float));
+  channel1File.read((char*)channel1Buffer, chunkSize * sizeof(float));
+  channel0File.close();
+  channel1File.close();
 }
 
 
@@ -90,10 +95,7 @@ timespec SampleReader::endTimeOfEnclosingSample(timespec time) {
 
 
 double SampleReader::getEnergyOfSample(const unsigned sample, const double fraction) {
-  return ( (   (channelABuffer[sample] * channelCBuffer[sample])
-             + (channelBBuffer[sample] * channelDBuffer[sample])
-	     - SYSTEM_POWER_OFFSET)
-           * getDouble(sampleWidth) * fraction );
+  return ( channel0Buffer[sample] * channel1Buffer[sample] * getDouble(sampleWidth) * fraction );
 }
 
 double SampleReader::getEnergy(timespec intervalEnd) {
@@ -106,10 +108,10 @@ double SampleReader::getEnergy(timespec intervalEnd) {
 
   if ( !(intervalEnd >= examinedSoFar) ) {
       std::cerr << "Warning: Timestamp detected which is prior to previous one, exiting!" << std::endl;
-      //std::cerr << "         intervalEnd   = " << intervalEnd.tv_sec << "." << std::setfill('0') << std::setw(9) << intervalEnd.tv_nsec << std::endl;
-      //std::cerr << "         examinedSoFar = " << examinedSoFar.tv_sec << "." << std::setfill('0') << std::setw(9) << examinedSoFar.tv_nsec << std::endl;
-      //std::cerr << std::endl;
-      //exit(EXIT_FAILURE);
+      std::cerr << "         intervalEnd   = " << intervalEnd.tv_sec << "." << std::setfill('0') << std::setw(9) << intervalEnd.tv_nsec << std::endl;
+      std::cerr << "         examinedSoFar = " << examinedSoFar.tv_sec << "." << std::setfill('0') << std::setw(9) << examinedSoFar.tv_nsec << std::endl;
+      std::cerr << std::endl;
+      exit(EXIT_FAILURE);
   }
 
   while (intervalEnd > examinedSoFar) {

@@ -75,12 +75,12 @@ void handleNewMarker(Marker marker) {
 
 int main(int argc, char* argv[])
 {
-  if(argc != 10)
+  if(argc != 5)
     {
-      std::cout << "usage: evaluate <call logfile> <time profile> <output profile> <timestamps> <chunk size> <channelA> <channelB> <channelC> <channelD>" << std::endl;
+      std::cout << "usage: evaluate <call logfile> <time profile> <output profile> <chunkSize>" << std::endl;
+      std::cout << "IMPORTANT: use this within the raw data directory!" << std::endl;
       exit(EXIT_FAILURE);
     }
-
 
   // to be read from a config file in future versions
   unsigned chunkSize;
@@ -89,18 +89,12 @@ int main(int argc, char* argv[])
   const char* timeProfileFilename = argv[2];
 #endif
   const char* outputProfileFilename = argv[3];
-  const char* timeFilename = argv[4];
-  if (sscanf(argv[5], "%d", &chunkSize) != 1)
+  if (sscanf(argv[4], "%d", &chunkSize) != 1)
     {
       std::cout << "invalid chunk size" << std::endl;
       exit(EXIT_FAILURE);
     }
-  const char* channelAFilename = argv[6];
-  const char* channelBFilename = argv[7];
-  const char* channelCFilename = argv[8];
-  const char* channelDFilename = argv[9];
-  sampleReader.init(chunkSize, timeFilename, channelAFilename, channelBFilename, channelCFilename, channelDFilename);
-
+  sampleReader.init(chunkSize);
 
   // Parse the entire document in one go:
 #ifdef XML_LOGFILE

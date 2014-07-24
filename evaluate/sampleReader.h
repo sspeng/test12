@@ -1,4 +1,5 @@
 #include <fstream>
+#include <sstream>
 #include <time.h>
 
 
@@ -8,8 +9,9 @@ private:
   timespec sampleWidth;
   unsigned chunkSize;
 
-  std::ifstream timeFile, channelAFile, channelBFile, channelCFile, channelDFile;
-  double *channelABuffer, *channelBBuffer, *channelCBuffer, *channelDBuffer;
+  std::stringstream channel0Filename, channel1Filename;
+  std::ifstream timeFile, channel0File, channel1File;
+  double *channel0Buffer, *channel1Buffer;
   timespec bufferBegin, bufferEnd;
 
   timespec examinedSoFar;
@@ -20,16 +22,12 @@ private:
   timespec endTime(unsigned sample);
   timespec startTimeOfEnclosingSample(timespec time);
   timespec endTimeOfEnclosingSample(timespec time);
+
   double getEnergyOfSample(const unsigned sample, const double fraction);
 
 
 public:
-  void init(const unsigned chunkSize,
-	    const char* timeFilename,
-	    const char* channelAFilename,
-	    const char* channelBFilename,
-	    const char* channelCFilename,
-	    const char* channelDFilename);
+  void init(const unsigned chunkSize);
   void close();
 
   double getEnergy(timespec intervalBegin); // last timespec accounted serves as an implicit 'intervalBegin'!

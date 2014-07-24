@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <stdlib.h>
 #include <iostream>
+#include <iomanip> // TODO: remove
 
 
 XMLLogfileReader::XMLLogfileReader()
@@ -88,15 +89,26 @@ void XMLLogfileReader::on_characters(const Glib::ustring& text)
     }
   else if (state == START)
     {
-      sscanf(text.c_str(), "%lu.%lu", &currentMarker.time.tv_sec, &currentMarker.time.tv_nsec);
+      //sscanf(text.c_str(), "%lu.%lu", &currentMarker.time.tv_sec, &currentMarker.time.tv_nsec); // OLD VERSION
+      long usecs;
+      sscanf(text.c_str(), "%lu", &usecs);
+      currentMarker.time.tv_sec  = (usecs / 1000000);
+      currentMarker.time.tv_nsec = (usecs % 1000000) * 1000;
+      //std::cerr << "read: " << currentMarker.time.tv_sec << "." << std::setfill('0') << std::setw(9) << currentMarker.time.tv_nsec << std::endl;
     }
   else if (state == ID)
     {
       sscanf(text.c_str(), "%p", &currentMarker.routine);
+      std::cout << "routineID: " << currentMarker.routine << std::endl;
     }
   else if (state == STOP)
     {
-      sscanf(text.c_str(), "%lu.%lu", &currentMarker.time.tv_sec, &currentMarker.time.tv_nsec);
+      //sscanf(text.c_str(), "%lu.%lu", &currentMarker.time.tv_sec, &currentMarker.time.tv_nsec); // OLD VERSION
+      long usecs;
+      sscanf(text.c_str(), "%lu", &usecs);
+      currentMarker.time.tv_sec  = (usecs / 1000000);
+      currentMarker.time.tv_nsec = (usecs % 1000000) * 1000;
+      //std::cerr << "read: " << currentMarker.time.tv_sec << "." << std::setfill('0') << std::setw(9) << currentMarker.time.tv_nsec << std::endl;
     }
   else // remaining tags
     {
