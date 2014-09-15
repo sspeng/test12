@@ -1,3 +1,7 @@
+/*
+  NOTE: up to now, evaluates energy consumption of first CPU and attached DIMMs only!
+*/
+
 #include "sampleReader.h"
 
 #include "timespecOperators.h"
@@ -5,8 +9,6 @@
 #include <iostream>
 #include <iomanip> // TODO: remove
 #include <cstdlib>
-
-#define SYSTEM_POWER_OFFSET 12 // power offset drawn by an idle system (power supply, HDD, chipset, etc.)
 
 
 void SampleReader::init(const unsigned chunkSize) {
@@ -19,7 +21,9 @@ void SampleReader::init(const unsigned chunkSize) {
   channel1Buffer = new double[chunkSize];
 
   timeFile.read((char*)&bufferEnd, sizeof(timespec));
+  std::cout << "foo1" << std::endl;
   getNextChunk();
+  std::cout << "foo2" << std::endl;
   examinedSoFar = bufferBegin;
 }
 
