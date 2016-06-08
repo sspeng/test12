@@ -1,3 +1,5 @@
+/* TODO: a SAX parser may return strings in between tags as multiple chunks ~> concatenate chunks */
+
 #include "profileReader.h"
 
 #include <cstdio>

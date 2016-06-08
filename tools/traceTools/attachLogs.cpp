@@ -13,6 +13,7 @@
 #endif
 #include <stack>
 #include <iostream>
+#include <iomanip> // TODO: remove!
 #include <stdlib.h>
 
 #include "../../evaluate/timespecOperators.h"
@@ -40,7 +41,7 @@ void init(char* timeFilename, char* gnuplotFilename) {
 
 void finalize(char* sampleFilename) {
   gnuplotFile << "\"\" 0)" << std::endl << std::endl			\
-              << "plot \"" << sampleFilename << "\" binary format=\"%double\" using 1" << std::endl;
+              << "plot \"" << sampleFilename << "\" binary format=\"%float\" using 1 with lines" << std::endl;
 
   timeFile.close();
   gnuplotFile.close();
@@ -69,7 +70,13 @@ void handleNewMarker(Marker marker) {
   gnuplotFile << (marker.isStartMarker ? marker.routine : callstack.top().routine);
 #endif
 #ifdef XML_TRACE_READER
-  gnuplotFile << (marker.isStartMarker ? routines[marker.routine] : routines[callstack.top().routine]);
+  if ( (marker.isStartMarker ? routines[marker.routine] : routines[callstack.top().routine]).length() < 44) {
+    // output routine names
+    gnuplotFile << (marker.isStartMarker ? routines[marker.routine] : routines[callstack.top().routine]);
+  } else {
+    // output routine IDs
+    gnuplotFile << (marker.isStartMarker ? marker.routine : callstack.top().routine);
+  }
 #endif
   gnuplotFile << (marker.isStartMarker ? "_BEGIN" : "_END")		\
 	      << "\" "							\
@@ -95,9 +102,9 @@ int main(int argc, char* argv[])
     }
 #endif
 #ifdef XML_TRACE_READER
-  if(argc != 6)
+  if(argc != 5)
     {
-      std::cout << "usage: attachLogs <sampleFile> <timeFile> <traceFile> <profileFile> <gnuplotFile>" << std::endl;
+      std::cout << "usage: attachLogs <sampleFile> <timeFile> <time AND energy profile data> <gnuplotFile>" << std::endl;
       exit(EXIT_FAILURE);
     }
 #endif
@@ -106,13 +113,13 @@ int main(int argc, char* argv[])
   init(argv[2], argv[4]);
 #endif
 #ifdef XML_TRACE_READER
-  init(argv[2], argv[5]);
+  init(argv[2], argv[4]);
 #endif
 
 #ifdef XML_TRACE_READER
   ProfileReader profileReader;
   profileReader.registerNewEntryCallback(&handleNewEntry);
-  profileReader.parse_file(argv[4]);
+  profileReader.parse_file(argv[3]);
 #endif
 
 #ifdef SIMPLE_TRACE_READER
@@ -121,6 +128,7 @@ int main(int argc, char* argv[])
 #ifdef XML_TRACE_READER
   XMLTraceReader traceReader;
 #endif
+
   traceReader.registerNewMarkerCallback(&handleNewMarker);
   traceReader.parse_file(argv[3]);
 

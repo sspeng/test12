@@ -14,6 +14,8 @@ public:
 
 protected:
 
+  bool withinCoreSection;
+
   enum { NAME, ID, OTHER } state;
 
   Glib::ustring routineName;

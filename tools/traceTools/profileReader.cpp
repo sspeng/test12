@@ -1,3 +1,5 @@
+/* TODO: a SAX parser may return strings in between tags as multiple chunks ~> concatenate chunks */
+
 #include "profileReader.h"
 
 #include <fstream>
@@ -34,49 +36,61 @@ void ProfileReader::on_end_document()
 void ProfileReader::on_start_element(const Glib::ustring& name,
 				     const AttributeList& attributes)
 {
-  if (name == "name")
+  if (withinCoreSection)
     {
-      state = NAME;
+      if (name == "name")
+	{
+	  state = NAME;
+	}
+      else if (name == "id")
+	{
+	  state = ID;
+	}
+      else
+	{
+	  state = OTHER;
+	}
     }
-  else if (name == "id")
-    {
-      state = ID;
-    }
-  else
-    {
-      state = OTHER;
-    }
+
+  if (name == "core") withinCoreSection = true;
 }
 
 
 void ProfileReader::on_end_element(const Glib::ustring& name)
 {
-  if (name == "name")
-    {
-    }
-  else if (name == "id")
-    {
-      handleNewEntry(routineName, routineId);
-    }
-  else // remaining tags
-    {
-    }
+  if (name == "core") withinCoreSection = false;
+
+  if (withinCoreSection) {
+    if (name == "name")
+      {
+      }
+    else if (name == "id")
+      {
+	handleNewEntry(routineName, routineId);
+      }
+    else // remaining tags
+      {
+      }
+  }
 }
 
 
 void ProfileReader::on_characters(const Glib::ustring& text)
 {
-  if (state == NAME)
+  if (withinCoreSection)
     {
-      if (text != "\n")
-	routineName = text;
-    }
-  else if (state == ID)
-    {
-      sscanf(text.c_str(), "%p", &routineId);
-    }
-  else // remaining tags
-    {
+      if (state == NAME)
+	{
+	  if (text != "\n")
+	    routineName = text;
+	}
+      else if (state == ID)
+	{
+	  sscanf(text.c_str(), "%p", &routineId);
+	}
+      else // remaining tags
+	{
+	}
     }
 }
 

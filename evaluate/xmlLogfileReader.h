@@ -6,7 +6,8 @@
 class XMLLogfileReader : public xmlpp::SaxParser
 {
 public:
-  enum { CALL, START, ID, STOP, OTHER } state;
+  bool withinLogBlock;
+  enum { START, ID, STOP, OTHER } state;
   Marker currentMarker;
 
   XMLLogfileReader();

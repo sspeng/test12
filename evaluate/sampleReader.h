@@ -11,7 +11,7 @@ private:
 
   std::stringstream channel0Filename, channel1Filename;
   std::ifstream timeFile, channel0File, channel1File;
-  double *channel0Buffer, *channel1Buffer;
+  float *channel0Buffer, *channel1Buffer;
   timespec bufferBegin, bufferEnd;
 
   timespec examinedSoFar;

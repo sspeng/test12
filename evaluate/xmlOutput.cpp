@@ -1,3 +1,5 @@
+/* TODO: a SAX parser may return strings in between tags as multiple chunks ~> concatenate chunks */
+
 #include "xmlOutput.h"
 
 #include <stdlib.h>
@@ -56,7 +58,7 @@ void XMLOutput::on_end_element(const Glib::ustring& name)
 {
   outfile << "</" << name << ">";
 
-  if (name == "totalTime") { // append energy values behind tag <totalTime>
+  if (name == "total") { // append energy values behind tag <totalTime>
     outfile << std::endl;
     outfile << "<selfEnergy>" << (*routines)[currentID].selfEnergy << "</selfEnergy>" << std::endl;
     outfile << "<totalEnergy>" << (*routines)[currentID].totalEnergy << "</totalEnergy>";

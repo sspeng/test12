@@ -2,8 +2,8 @@ CXX = g++
 
 CXXFLAGS = -Wall -g -ftrapv
 
-ATTACH_LOGS_SIMPLE_TRACE = 1
-#ATTACH_LOGS_XML_TRACE = 1
+#ATTACH_LOGS_SIMPLE_TRACE = 1
+ATTACH_LOGS_XML_TRACE = 1
 
 ifdef ATTACH_LOGS_SIMPLE_TRACE
 DEFS = -D SIMPLE_TRACE_READER
@@ -42,7 +42,11 @@ attachLogsSRC = ../../evaluate/timespecOperators.h ../../evaluate/timespecOperat
                 $(attachLogsTraceSRC) \
                 attachLogs.cpp
 
-all:	interpolateTimestamps attachTimestamps attachLogs
+attachBWSRC = ../../evaluate/timespecOperators.h ../../evaluate/timespecOperators.cpp \
+              $(attachLogsTraceSRC) \
+              attachBW.cpp
+
+all:	interpolateTimestamps attachTimestamps attachLogs attachBW
 
 interpolateTimestamps:	$(interpolateTimestampsSRC)
 	$(CXX) $(CXXFLAGS) $(interpolateTimestampsSRC) -o $@
@@ -53,7 +57,10 @@ attachTimestamps:	$(attachTimestampsSRC)
 attachLogs:		$(attachLogsSRC)
 	$(CXX) $(CXXFLAGS) $(IFLAGS) $(DEFS) $(attachLogsSRC) $(STATICLIBS) -o $@
 
+attachBW:		$(attachBWSRC)
+	$(CXX) $(CXXFLAGS) $(IFLAGS) $(DEFS) $(attachBWSRC) $(STATICLIBS) -o $@
+
 clean:
-	rm -f interpolateTimestamps attachTimestamps attachLogs
+	rm -f interpolateTimestamps attachTimestamps attachLogs attachBW
 
 .PHONY: all clean

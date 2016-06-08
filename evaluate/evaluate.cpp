@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <fstream>
 #include <iostream>
+#include <iomanip> // TODO: remove
 
 
 #ifdef SIMPLE_LOGFILE
@@ -75,21 +76,18 @@ void handleNewMarker(Marker marker) {
 
 int main(int argc, char* argv[])
 {
-  if(argc != 5)
+  if(argc != 4)
     {
-      std::cout << "usage: evaluate <call logfile> <time profile> <output profile> <chunkSize>" << std::endl;
+      std::cout << "usage: evaluate <time profile data> <time AND energy profile data> <chunkSize>" << std::endl;
       std::cout << "IMPORTANT: use this within the raw data directory!" << std::endl;
       exit(EXIT_FAILURE);
     }
 
   // to be read from a config file in future versions
   unsigned chunkSize;
-  const char* callLogFilename = argv[1];
-#ifdef XML_OUTPUT
-  const char* timeProfileFilename = argv[2];
-#endif
-  const char* outputProfileFilename = argv[3];
-  if (sscanf(argv[4], "%d", &chunkSize) != 1)
+  const char*  inputFilename = argv[1];
+  const char* outputFilename = argv[2];
+  if (sscanf(argv[3], "%d", &chunkSize) != 1)
     {
       std::cout << "invalid chunk size" << std::endl;
       exit(EXIT_FAILURE);
@@ -102,7 +100,7 @@ int main(int argc, char* argv[])
     {
 #endif
       logfileReader.registerNewMarkerCallback(&handleNewMarker);
-      logfileReader.parse_file(callLogFilename);
+      logfileReader.parse_file(inputFilename);
 #ifdef XML_LOGFILE
     }
   catch(const xmlpp::exception& ex)
@@ -114,11 +112,11 @@ int main(int argc, char* argv[])
 
 #ifdef XML_OUTPUT
   // merge data with timing statistics
-  output.merge(timeProfileFilename, &routines, outputProfileFilename);
+  output.merge(inputFilename, &routines, outputFilename);
 #endif
 #ifdef SIMPLE_OUTPUT
   // write routines map to text file
-  output.write(&routines, outputProfileFilename);
+  output.write(&routines, outputFilename);
 #endif
 
   return 0;

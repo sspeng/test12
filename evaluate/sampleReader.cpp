@@ -15,15 +15,19 @@ void SampleReader::init(const unsigned chunkSize) {
 
   this->chunkSize = chunkSize;
 
-  timeFile.open("Time_0.dat", std::ios::in | std::ios::binary);
+  timeFile.open("Time_1.dat", std::ios::in | std::ios::binary);
 
-  channel0Buffer = new double[chunkSize];
-  channel1Buffer = new double[chunkSize];
+  channel0Buffer = new float[chunkSize];
+  channel1Buffer = new float[chunkSize];
 
-  timeFile.read((char*)&bufferEnd, sizeof(timespec));
-  std::cout << "foo1" << std::endl;
   getNextChunk();
-  std::cout << "foo2" << std::endl;
+  /*
+    We don't have a start time of the first chunk. Hence we have to
+    skip them to get a proper time. As an implication, we should
+    assure to start the experiment at least one chunk after the
+    measurement!
+  */
+  getNextChunk();
   examinedSoFar = bufferBegin;
 }
 
@@ -36,19 +40,6 @@ void SampleReader::close() {
 void SampleReader::getNextChunk() {
   bufferBegin = bufferEnd;
   timeFile.read((char*)&bufferEnd, sizeof(timespec));
-  /*
-    We don't have an end time of the last chunk and therefore can not
-    compute a proper sampleWidth. Hence the last chunk will be
-    discarded. As an implication, we should assure to continue the
-    measurement at least for the duration of one chunk after the
-    experiment has finished.
-  */
-  /*
-    We don't have a start time of the first chunk. Hence we have to
-    skip them to get a proper time. As an implication, we should
-    assure to start the experiment at least one chunk after the
-    measurement.
-  */
   if (timeFile.eof()) {
       std::cout << "ERROR: last chunk reached, aborting now." << std::endl;
       exit(EXIT_FAILURE);
@@ -57,8 +48,8 @@ void SampleReader::getNextChunk() {
 
   channel0Filename.str("");
   channel1Filename.str("");
-  channel0Filename << "Channel_0_" << bufferBegin.tv_sec << "_" << bufferBegin.tv_nsec << ".dat";
-  channel1Filename << "Channel_1_" << bufferBegin.tv_sec << "_" << bufferBegin.tv_nsec << ".dat";
+  channel0Filename << "Channel_8_" << bufferEnd.tv_sec << "_" << bufferEnd.tv_nsec << ".dat";
+  channel1Filename << "Channel_9_" << bufferEnd.tv_sec << "_" << bufferEnd.tv_nsec << ".dat";
   channel0File.open(channel0Filename.str().c_str(), std::ios::in | std::ios::binary);
   channel1File.open(channel1Filename.str().c_str(), std::ios::in | std::ios::binary);
   channel0File.read((char*)channel0Buffer, chunkSize * sizeof(float));
@@ -111,7 +102,7 @@ double SampleReader::getEnergy(timespec intervalEnd) {
   double lackingFirstSampleFraction, lackingLastSampleFraction;
 
   if ( !(intervalEnd >= examinedSoFar) ) {
-      std::cerr << "Warning: Timestamp detected which is prior to previous one, exiting!" << std::endl;
+      std::cerr << "Warning: Timestamp detected which is prior to previous one, exiting! Assure to wait for at least 1s before starting your code after the measurement begins!" << std::endl;
       std::cerr << "         intervalEnd   = " << intervalEnd.tv_sec << "." << std::setfill('0') << std::setw(9) << intervalEnd.tv_nsec << std::endl;
       std::cerr << "         examinedSoFar = " << examinedSoFar.tv_sec << "." << std::setfill('0') << std::setw(9) << examinedSoFar.tv_nsec << std::endl;
       std::cerr << std::endl;

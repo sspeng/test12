@@ -17,6 +17,8 @@ public:
 
  protected:
 
+  bool withinLogSection;
+
   enum { START, ID, STOP, OTHER } state;
   Marker currentMarker;
 
